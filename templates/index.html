@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Internet Speed Test</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Internet Speed Test</h1>
+
+        <p>Check your internet connection speed</p>
+
+        <button onclick="testSpeed()" id="btn">
+            Start Test
+        </button>
+
+        <div class="card">
+            <h2>Download Speed</h2>
+            <h1 id="download">-- Mbps</h1>
+        </div>
+
+        <div class="card">
+            <h2>Upload Speed</h2>
+            <h1 id="upload">-- Mbps</h1>
+        </div>
+
+        <div class="card">
+            <h2>Ping</h2>
+            <h1 id="ping">-- ms</h1>
+        </div>
+
+        <p id="message"></p>
+
+    </div>
+
+    <script>
+        async function testSpeed() {
+
+            const btn = document.getElementById("btn");
+            const message = document.getElementById("message");
+
+            btn.disabled = true;
+            btn.textContent = "Testing...";
+            message.textContent = "Please wait...";
+
+            try {
+                const response = await fetch("/test");
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error);
+                }
+
+                document.getElementById("download").textContent =
+                    data.download + " Mbps";
+
+                document.getElementById("upload").textContent =
+                    data.upload + " Mbps";
+
+                document.getElementById("ping").textContent =
+                    data.ping + " ms";
+
+                message.textContent = "Speed test completed!";
+
+            } catch (error) {
+                message.textContent = error.message;
+            }
+
+            btn.disabled = false;
+            btn.textContent = "Start Test";
+        }
+    </script>
+
+</body>
+</html>
